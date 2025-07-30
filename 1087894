@@ -1,0 +1,36 @@
+name: Build APK
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  build:
+    name: Build Kivy APK
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v2
+
+    - name: Set up Python
+      uses: actions/setup-python@v2
+      with:
+        python-version: 3.10
+
+    - name: Install dependencies
+      run: |
+        sudo apt update
+        sudo apt install -y zip unzip openjdk-11-jdk python3-pip build-essential git
+        pip install --upgrade buildozer cython virtualenv
+
+    - name: Build the APK
+      run: |
+        buildozer android debug
+
+    - name: Upload the APK
+      uses: actions/upload-artifact@v2
+      with:
+        name: myapp-apk
+        path: bin/*.apk
